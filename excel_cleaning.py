@@ -8,8 +8,14 @@ import pandas as pd
 
 print("\n### WELCOME ###\n")
 
-file_name = input("File name: ")
-df = pd.read_csv(file_name)
+while True:
+    try:
+        file_name = input("File name: ")
+        df = pd.read_csv(file_name)
+        break
+    except:
+        print("\nWrong file name, please try again.\n")
+
 print("\nFirst rows of your file:")
 print(df.head(5))
 
@@ -28,20 +34,43 @@ while app_run:
         df_delete = df.dropna()
         rows_deleted = len(df.index.values.tolist()) - len(df_delete.index.values.tolist())
         print("\nSuccess! Number of rows deleted:", rows_deleted)
-        break
+        app_run = False
 
     elif question == "2":
         df_numerical_col = (df.select_dtypes(include='number').columns.values.tolist())
 
         for col_name in df_numerical_col:
-            # print(col_name)
             df_mean = df[col_name].mean()
-            # print(df_mean)
             df.fillna({col_name: df_mean}, inplace=True)
 
-        print("\nSuccess! Missing values in the columns are now filled with the mean value of each colum.")
-        break
+        print("\nSuccess! Missing values in the columns are now filled with the Mean value of each colum.")
+        app_run = False
+
+    elif question == "3":
+        df_numerical_col = (df.select_dtypes(include='number').columns.values.tolist())
+
+        for col_name in df_numerical_col:
+            df_median = df[col_name].median()
+            df.fillna({col_name: df_median}, inplace=True)
+
+        print("\nSuccess! Missing values in the columns are now filled with the Median value of each colum.")
+        app_run = False
+
+    elif question == "4":
+        df_numerical_col = (df.select_dtypes(include='number').columns.values.tolist())
+
+        for col_name in df_numerical_col:
+            df_mode = df[col_name].mode()[0]
+            df.fillna({col_name: df_mode}, inplace=True)
+
+        print("\nSuccess! Missing values in the columns are now filled with the Mode value of each colum.")
+        app_run = False
 
     elif question == "q":
         app_run = False
         print("\n### GOODBYE ###")
+
+    else:
+        print("\nWrong input. Please try again.")
+
+question2 = input("\n...")
