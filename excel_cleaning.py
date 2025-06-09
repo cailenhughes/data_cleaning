@@ -1,10 +1,5 @@
 import pandas as pd
-
-# USEFULL COMMANDS
-# df = pd.read_csv("data.csv")
-# print(df.info())
-# print(df.to_string())
-# print(df.head(5))
+import numpy as np
 
 print("\n### WELCOME ###\n")
 
@@ -13,7 +8,7 @@ while True:
         file_name = input("File name: ")
         df = pd.read_csv(file_name)
         break
-    except:
+    except FileNotFoundError:
         print("\nWrong file name, please try again.\n")
 
 print("\nFirst rows of your file:")
