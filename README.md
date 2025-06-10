@@ -3,7 +3,7 @@
 <h3>This is a simple program to automatically clean Excel files based on your needs.</h3>
 
 <p>The program starts by analyzing the data to find possible outliers.
-If anything suspicious is found, the user is asked how he/she wants to handle the outliers.</p>
+If anything suspicious is found, the user is asked how he/she wants to handle the outliers.
 
 The user can decide how he/she wants to deal with empty cells :
 <li>Deleting rows with empty cells.</li>
