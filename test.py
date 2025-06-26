@@ -10,12 +10,14 @@ for col_name in df_num:
     deviations = np.abs(col_values - median)
     mad = np.median(deviations)
     z_scores = (0.6745 * (col_values - median)) / mad
-    outliers = col_values[np.abs(z_scores) > 3.5]
+    outliers = col_values[np.abs(z_scores) > 3.5]  # Checking for potential outliers in each column
 
-    if outliers.size != 0:
-        print("Some abnormal values have been detected in column '" + col_name + "':", outliers)
+    if outliers.size == 0:  # Size of the array containing outliers = 0, so no outlier for the column
+        continue
 
-    for x in df_num.index:
+    print("\nSome abnormal values have been detected in column '" + col_name + "':", outliers)
+
+    for x in df_num.index:  # Calculate the Mean value of the column (without considering the potential outliers)
         if df_num.loc[x, col_name] in outliers:
             df_num.drop(x, inplace=True)
 
@@ -30,35 +32,16 @@ for col_name in df_num:
                      "--> ")
 
     if question == "1":
-        break
+        continue
 
     elif question == "2":
-        for x in df.index:
+        for x in df.index:  # Delete rows containing outliers
             if df.loc[x, col_name] in outliers:
                 df.drop(x, inplace=True)
                 print(df.to_string())
 
     elif question == "3":
-        for x in df.index:
+        for x in df.index:  # Replace outliers with Mean value of the column
             if df.loc[x, col_name] in outliers:
                 df.loc[x, col_name] = mean
                 print(df.to_string())
-
-'''
-col_values = df_num["maxpulse"].dropna().values
-median = np.median(col_values)
-deviations = np.abs(col_values - median)
-mad = np.median(deviations)
-z_scores = (0.6745 * (col_values - median)) / mad
-outliers = col_values[np.abs(z_scores) > 3.5]
-print("Some abnormal values have been detected in column '" + "duration" + "':", outliers)
-
-for x in df.index:
-    if df.loc[x, "duration"] in outliers:
-        df.drop(x, inplace=True)
-        print(df.to_string())
-
-    mean = df["duration"].mean()
-    df.fillna({"duration": mean}, inplace=True)
-    print(mean)
-'''
