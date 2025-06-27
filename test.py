@@ -45,3 +45,5 @@ for col_name in df_num:
             if df.loc[x, col_name] in outliers:
                 df.loc[x, col_name] = mean
                 print(df.to_string())
+
+df.to_excel('out2.xlsx', engine='xlsxwriter')

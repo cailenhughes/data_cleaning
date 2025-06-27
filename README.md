@@ -1,6 +1,6 @@
 <h1>data_cleaning</h1>
 <br>
-<h3>This is a simple program to automatically clean Excel files based on your needs.</h3>
+<h3>This is a simple program to automatically clean Excel files.</h3>
 <br>
 <p>The program starts by analyzing the data to find possible outliers.
 If anything suspicious is found, the user is asked how he/she wants to handle the outliers.</p>

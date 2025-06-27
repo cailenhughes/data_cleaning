@@ -15,8 +15,123 @@ print("\nFirst rows of your file:")
 print(df.head(5))
 
 app_run = True
+df_num = df.select_dtypes(include='number')
 
 while app_run:
+    for col_name in df_num:
+        col_values = df_num[col_name].dropna().values
+        median = np.median(col_values)
+        deviations = np.abs(col_values - median)
+        mad = np.median(deviations)
+        z_scores = (0.6745 * (col_values - median)) / mad
+        outliers = col_values[np.abs(z_scores) > 3.5]  # Checking for potential outliers in each column
+
+        if outliers.size == 0:  # Size of the array containing outliers = 0, so no outlier for the column
+            continue
+
+        print("\nSome abnormal values have been detected in column '" + col_name + "':", outliers)
+
+        for x in df_num.index:  # Calculate the Mean value of the column (without considering the potential outliers)
+            if df_num.loc[x, col_name] in outliers:
+                df_num.drop(x, inplace=True)
+
+            mean = df_num[col_name].mean()
+            df_num.fillna({col_name: mean}, inplace=True)
+
+        question = input("\nHow do you want to deal with these values?\n"
+                         "--> Press (1) to keep them\n"
+                         "--> Press (2) to delete them\n"
+                         "--> Press (3) to replace them with the MEAN value of the column\n"
+                         "--> ")
+
+        if question == "1":
+            continue
+
+        elif question == "2":
+            for x in df.index:  # Delete rows containing outliers
+                if df.loc[x, col_name] in outliers:
+                    df.drop(x, inplace=True)
+                    print(df.to_string())
+
+        elif question == "3":
+            for x in df.index:  # Replace outliers with Mean value of the column
+                if df.loc[x, col_name] in outliers:
+                    df.loc[x, col_name] = mean
+                    print(df.to_string())
+
+    question2 = input("\nHow do you want to deal with empty cells?\n"
+                      "--> Press (1) to delete the rows containing empty cells\n"
+                      "--> Press (2) to replace the values with the MEAN value of the column\n"
+                      "--> Press (3) to replace the values with the MEDIAN value of the column\n"
+                      "--> Press (4) to replace the values with the MODE value of the column\n"
+                      "--> Press (s) to save your changes in a new file\n"
+                      "--> Press (q) to quit\n"
+                      "--> ")
+
+    if question2 == "1":
+        df_delete = df.dropna()
+        rows_deleted = len(df.index.values.tolist()) - len(df_delete.index.values.tolist())
+        print("\nSuccess! Number of rows deleted:", rows_deleted)
+        app_run = False
+
+    elif question2 == "2":
+        df_numerical_col = (df.select_dtypes(include='number').columns.values.tolist())
+
+        for col_name in df_numerical_col:
+            df_mean = df[col_name].mean()
+            df.fillna({col_name: df_mean}, inplace=True)
+
+        print("\nSuccess! Missing values in the columns are now filled with the Mean value of each colum.")
+        app_run = False
+
+    elif question2 == "3":
+        df_numerical_col = (df.select_dtypes(include='number').columns.values.tolist())
+
+        for col_name in df_numerical_col:
+            df_median = df[col_name].median()
+            df.fillna({col_name: df_median}, inplace=True)
+
+        print("\nSuccess! Missing values in the columns are now filled with the Median value of each colum.")
+        app_run = False
+
+    elif question2 == "4":
+        df_numerical_col = (df.select_dtypes(include='number').columns.values.tolist())
+
+        for col_name in df_numerical_col:
+            df_mode = df[col_name].mode()[0]
+            df.fillna({col_name: df_mode}, inplace=True)
+
+        print("\nSuccess! Missing values in the columns are now filled with the Mode value of each colum.")
+        app_run = False
+
+    elif question2 == "s":
+        save_format = input("\nWhat format do you want to choose?"
+                            "\n--> Press (1) to save your changes in a new .csv file."
+                            "\n--> Press (2) to save your changes in a new .xlsx file."
+                            "\n--> ")
+
+        if save_format == "1":
+            df.to_csv('cleaned_data.csv', index=False)
+            print("\nSuccess! Your changes have been saved in a new file called cleaned_data.csv.")
+            app_run = False
+
+        elif save_format == "2":
+            df.to_excel('cleaned_data.xlsx', engine='xlsxwriter')
+            print("\nSuccess! Your changes have been saved in a new file called cleaned_data.csv.")
+            app_run = False
+
+        else:
+            print("\nWrong input. Please try again.")
+
+    elif question2 == "q":
+        app_run = False
+        print("\n### GOODBYE ###")
+
+    else:
+        print("\nWrong input. Please try again.")
+
+'''
+while app_run: 
     question = input("\nHow do you want to deal with empty cells?\n"
                      "--> Press (1) to delete the rows containing empty cells\n"
                      "--> Press (2) to replace the values with the MEAN value of the column\n"
@@ -69,3 +184,4 @@ while app_run:
         print("\nWrong input. Please try again.")
 
 question2 = input("\n...")
+'''
