@@ -38,12 +38,15 @@ for col_name in df_num:
         for x in df.index:  # Delete rows containing outliers
             if df.loc[x, col_name] in outliers:
                 df.drop(x, inplace=True)
-                print(df.to_string())
+
+        print("\nSuccess! Rows containing outliers have been deleted in column '" + col_name + "'.")
 
     elif question == "3":
         for x in df.index:  # Replace outliers with Mean value of the column
             if df.loc[x, col_name] in outliers:
                 df.loc[x, col_name] = mean
-                print(df.to_string())
 
-df.to_excel('out2.xlsx', engine='xlsxwriter')
+        print("\nSuccess! Rows containing outliers in column '" + col_name + "' have been replaced by the mean value of"
+                                                                             " the column")
+
+#  df.to_excel('out2.xlsx', engine='xlsxwriter')
