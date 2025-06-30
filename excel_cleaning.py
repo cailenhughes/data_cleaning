@@ -17,6 +17,9 @@ print(df.head(5))
 app_run = True
 df_num = df.select_dtypes(include='number')
 
+outliers_dict = {}
+mean_dict = {}
+
 while app_run:
     for col_name in df_num:
         col_values = df_num[col_name].dropna().values
@@ -38,16 +41,20 @@ while app_run:
             mean = df_num[col_name].mean()
             df_num.fillna({col_name: mean}, inplace=True)
 
-        question = input("\nHow do you want to deal with the abnormal values detected in column '" + col_name + "'?\n"
-                         "--> Press (1) to keep them\n"
-                         "--> Press (2) to delete them\n"
-                         "--> Press (3) to replace them with the MEAN value of the column\n"
-                         "--> ")
+        outliers_dict[col_name] = outliers
+        mean_dict[col_name] = mean
 
-        if question == "1":
-            continue
+    question = input("\nHow do you want to deal with the abnormal values detected in column '" + col_name + "'?\n"
+                     "--> Press (1) to keep them\n"
+                     "--> Press (2) to delete them\n"
+                     "--> Press (3) to replace them with the MEAN value of the column\n"
+                     "--> ")
 
-        elif question == "2":
+    if question == "1":
+        print("\nAbnormal values have not been modified.")
+
+    for col_name, outliers in outliers_dict.items():
+        if question == "2":
             for x in df.index:  # Delete rows containing outliers
                 if df.loc[x, col_name] in outliers:
                     df.drop(x, inplace=True)
@@ -55,6 +62,7 @@ while app_run:
             print("\nSuccess! Rows containing outliers have been deleted in column '" + col_name + "'.")
 
         elif question == "3":
+            mean = mean_dict[col_name]
             for x in df.index:  # Replace outliers with Mean value of the column
                 if df.loc[x, col_name] in outliers:
                     df.loc[x, col_name] = mean
@@ -105,7 +113,7 @@ while app_run:
     elif question2 == "q":
         app_run = False
 
-    question3 = input("\nDo you want to save your changes in a new file?\n"
+    question3 = input("\nDo you want to save your changes in a new file?"
                       "\n--> Press (1) to save your changes in a new .csv file."
                       "\n--> Press (2) to save your changes in a new .xlsx file."
                       "\n--> Press (q) to quit without saving your changes."
