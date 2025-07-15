@@ -1,5 +1,4 @@
 import sys
-
 import pandas as pd
 import numpy as np
 
@@ -7,12 +6,12 @@ print("\n### WELCOME ###\n")
 
 while True:
     try:
-        file_name = "data.csv"
-        # file_name = input("File name: ")
+        file_name = input("File name: ")
         df = pd.read_csv(file_name)
         break
     except FileNotFoundError:
-        print("\nWrong file name, please try again.\n")
+        print("\nWrong file name, please try again.\n"
+              "Don't forget the extension (.csv or .xlsx) ;)\n")
 
 print("\nFirst rows of your file:")
 print(df.head(5))
@@ -60,29 +59,37 @@ while app_run:
         print("\nAbnormal values have not been modified.")
         app_run = False
 
+    elif question == "2":
+        deleted_rows = []
+
+        for col_name, outliers in outliers_dict.items():
+            for x in df.index:  # Delete rows containing outliers
+                if df.loc[x, col_name] in outliers:
+                    df.drop(x, inplace=True)
+            deleted_rows.append(col_name)
+
+        print("\nSuccess! Rows containing outliers have been deleted in column(s): '" + ", ".join(deleted_rows) + "'.")
+        app_run = False
+
+    elif question == "3":
+        modified_rows = []
+
+        for col_name, outliers in outliers_dict.items():
+            mean = mean_dict[col_name]
+
+            for x in df.index:  # Replace outliers with Mean value of the column
+                if df.loc[x, col_name] in outliers:
+                    df.loc[x, col_name] = mean
+            modified_rows.append(col_name)
+
+        print("\nSuccess! Rows containing outliers have been replaced by the mean value in columns: '"
+              + ", ".join(modified_rows) + "'")
+        app_run = False
+
     elif question == "q":
         print("\n### GOODBYE ###")
         app_run = False
         sys.exit(0)
-
-    for col_name, outliers in outliers_dict.items():
-        if question == "2":
-            for x in df.index:  # Delete rows containing outliers
-                if df.loc[x, col_name] in outliers:
-                    df.drop(x, inplace=True)
-
-            print("\nSuccess! Rows containing outliers have been deleted in column '" + col_name + "'.")
-            app_run = False
-
-        elif question == "3":
-            mean = mean_dict[col_name]
-            for x in df.index:  # Replace outliers with Mean value of the column
-                if df.loc[x, col_name] in outliers:
-                    df.loc[x, col_name] = mean
-
-            print("\nSuccess! Rows containing outliers in column '" + col_name + "' have been replaced by the mean "
-                                                                                 "value of the column")
-            app_run = False
 
 print("\n### PART 2: DEALING WITH MISSING DATA ###")
 
