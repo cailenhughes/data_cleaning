@@ -3,9 +3,10 @@ import numpy as np
 
 df = pd.read_csv("data.csv")
 df_num = df.select_dtypes(include='number')
-
 outliers_dict = {}
 mean_dict = {}
+
+print(df.info())
 
 for col_name in df_num:
     col_values = df_num[col_name].dropna().values
@@ -40,19 +41,26 @@ question = input("\nHow do you want to deal with these values?\n"
 if question == "1":
     print("\nAbnormal values have not been modified.")
 
-for col_name, outliers in outliers_dict.items():
-    if question == "2":
+elif question == "2":
+    deleted_rows = []
+
+    for col_name, outliers in outliers_dict.items():
         for x in df.index:  # Delete rows containing outliers
             if df.loc[x, col_name] in outliers:
                 df.drop(x, inplace=True)
+        deleted_rows.append(col_name)
 
-        print("\nSuccess! Rows containing outliers have been deleted in column '" + col_name + "'.")
+    print("\nSuccess! Rows containing outliers have been deleted in column(s): '" + ", ".join(deleted_rows) + "'.")
 
-    elif question == "3":
+elif question == "3":
+    modified_rows = []
+
+    for col_name, outliers in outliers_dict.items():
         mean = mean_dict[col_name]
+
         for x in df.index:  # Replace outliers with Mean value of the column
             if df.loc[x, col_name] in outliers:
                 df.loc[x, col_name] = mean
+        modified_rows.append(col_name)
 
-        print("\nSuccess! Rows containing outliers in column '" + col_name + "' have been replaced by the mean "
-                                                                             "value of the column")
+    print("\nSuccess! Rows containing outliers have been replaced by the mean value in columns: '" + ", ".join(modified_rows) + "'")

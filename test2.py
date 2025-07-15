@@ -1,3 +1,5 @@
+import sys
+
 import pandas as pd
 import numpy as np
 
@@ -5,7 +7,8 @@ print("\n### WELCOME ###\n")
 
 while True:
     try:
-        file_name = input("File name: ")
+        file_name = "data.csv"
+        # file_name = input("File name: ")
         df = pd.read_csv(file_name)
         break
     except FileNotFoundError:
@@ -13,7 +16,8 @@ while True:
 
 print("\nFirst rows of your file:")
 print(df.head(5))
-print()
+
+print("\n### PART 1: CHECKING FOR ABNORMAL DATA ###")
 
 app_run = True
 df_num = df.select_dtypes(include='number')
@@ -33,7 +37,7 @@ while app_run:
         if outliers.size == 0:  # Size of the array containing outliers = 0, so no outlier for the column
             continue
 
-        print("Some abnormal values have been detected in column '" + col_name + "':", outliers)
+        print("\nSome abnormal values have been detected in column '" + col_name + "':", outliers)
 
         for x in df_num.index:  # Calculate the Mean value of the column (without considering the potential outliers)
             if df_num.loc[x, col_name] in outliers:
@@ -54,10 +58,12 @@ while app_run:
 
     if question == "1":
         print("\nAbnormal values have not been modified.")
+        app_run = False
 
     elif question == "q":
         print("\n### GOODBYE ###")
-        break
+        app_run = False
+        sys.exit(0)
 
     for col_name, outliers in outliers_dict.items():
         if question == "2":
@@ -66,6 +72,7 @@ while app_run:
                     df.drop(x, inplace=True)
 
             print("\nSuccess! Rows containing outliers have been deleted in column '" + col_name + "'.")
+            app_run = False
 
         elif question == "3":
             mean = mean_dict[col_name]
@@ -75,7 +82,13 @@ while app_run:
 
             print("\nSuccess! Rows containing outliers in column '" + col_name + "' have been replaced by the mean "
                                                                                  "value of the column")
+            app_run = False
 
+print("\n### PART 2: DEALING WITH MISSING DATA ###")
+
+app_run = True
+
+while app_run:
     question2 = input("\nHow do you want to deal with empty cells?\n"
                       "--> Press (1) to delete the rows containing empty cells\n"
                       "--> Press (2) to replace the values with the MEAN value of the column\n"
@@ -87,6 +100,7 @@ while app_run:
     if question2 == "1":
         df = df.dropna()
         print("\nSuccess! Rows with missing values have been deleted.")
+        app_run = False
         # TODO: find a way to count the deleted rows
 
     elif question2 == "2":
@@ -97,6 +111,7 @@ while app_run:
             df.fillna({col_name: df_mean}, inplace=True)
 
         print("\nSuccess! Missing values in the columns are now filled with the Mean value of each colum.")
+        app_run = False
 
     elif question2 == "3":
         df_numerical_col = (df.select_dtypes(include='number').columns.values.tolist())
@@ -106,6 +121,7 @@ while app_run:
             df.fillna({col_name: df_median}, inplace=True)
 
         print("\nSuccess! Missing values in the columns are now filled with the Median value of each colum.")
+        app_run = False
 
     elif question2 == "4":
         df_numerical_col = (df.select_dtypes(include='number').columns.values.tolist())
@@ -115,10 +131,17 @@ while app_run:
             df.fillna({col_name: df_mode}, inplace=True)
 
         print("\nSuccess! Missing values in the columns are now filled with the Mode value of each colum.")
+        app_run = False
 
     elif question2 == "q":
         app_run = False
+        sys.exit(0)
 
+print("\n### PART 3: SAVING CHANGES ###")
+
+app_run = True
+
+while app_run:
     question3 = input("\nDo you want to save your changes in a new file?"
                       "\n--> Press (1) to save your changes in a new .csv file."
                       "\n--> Press (2) to save your changes in a new .xlsx file."
@@ -138,9 +161,3 @@ while app_run:
     elif question3 == "q":
         print("\n### GOODBYE ###")
         app_run = False
-
-# TODO:
-#  Error if wrong input from the user.
-#  Allow user to choose a file.
-#  Wrong data format
-#  Duplicates
